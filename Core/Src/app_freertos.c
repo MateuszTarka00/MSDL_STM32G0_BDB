@@ -63,26 +63,26 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for canOpenManagerT */
-osThreadId_t canOpenManagerTHandle;
-const osThreadAttr_t canOpenManagerT_attributes = {
-  .name = "canOpenManagerT",
-  .stack_size = 1024 * 4,
-  .priority = (osPriority_t) osPriorityHigh1,
-};
-/* Definitions for inputCheckT */
-osThreadId_t inputCheckTHandle;
-const osThreadAttr_t inputCheckT_attributes = {
-  .name = "inputCheckT",
-  .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal1,
-};
 /* Definitions for tpdoRequesterT */
 osThreadId_t tpdoRequesterTHandle;
 const osThreadAttr_t tpdoRequesterT_attributes = {
   .name = "tpdoRequesterT",
-  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512 * 4
+};
+/* Definitions for CanOpenMenagerT */
+osThreadId_t canOpenMenagerTHandle;
+const osThreadAttr_t CanOpenMenagerT_attributes = {
+  .name = "CanOpenMenagerT",
+  .priority = (osPriority_t) osPriorityNormal3,
+  .stack_size = 1024 * 4
+};
+/* Definitions for InputCheckT */
+osThreadId_t InputCheckTHandle;
+const osThreadAttr_t InputCheckT_attributes = {
+  .name = "InputCheckT",
+  .priority = (osPriority_t) osPriorityNormal2,
+  .stack_size = 512 * 4
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,9 +90,9 @@ const osThreadAttr_t tpdoRequesterT_attributes = {
 
 /* USER CODE END FunctionPrototypes */
 
-void canOpenManager(void *argument);
-void inputCheck(void *argument);
 void tpdoRequester(void *argument);
+void canOpenMenager(void *argument);
+void inputCheck(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -187,14 +187,14 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of canOpenManagerT */
-  canOpenManagerTHandle = osThreadNew(canOpenManager, NULL, &canOpenManagerT_attributes);
-
-  /* creation of inputCheckT */
-  inputCheckTHandle = osThreadNew(inputCheck, NULL, &inputCheckT_attributes);
-
   /* creation of tpdoRequesterT */
   tpdoRequesterTHandle = osThreadNew(tpdoRequester, NULL, &tpdoRequesterT_attributes);
+
+  /* creation of CanOpenMenagerT */
+  canOpenMenagerTHandle = osThreadNew(canOpenMenager, NULL, &CanOpenMenagerT_attributes);
+
+  /* creation of InputCheckT */
+  InputCheckTHandle = osThreadNew(inputCheck, NULL, &InputCheckT_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -206,14 +206,51 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_canOpenManager */
+/* USER CODE BEGIN Header_tpdoRequester */
 /**
-  * @brief  Function implementing the canOpenManagerT thread.
-  * @param  argument: Not used
-  * @retval None
+* @brief Function implementing the tpdoRequesterT thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_tpdoRequester */
+void tpdoRequester(void *argument)
+{
+  /* USER CODE BEGIN tpdoRequester */
+	uint8_t *flags6010 = OD_getFlagsPDO(OD_find(OD,0x6010));
+  /* Infinite loop */
+  for(;;)
+  {
+	  HAL_IWDG_Refresh(&hiwdg);
+	  osDelay(pdMS_TO_TICKS(TPDO_REQUESTER_TASK_DELAY_MS));
+
+	  if(pendingVirtualInputMappings == 0) //check if there is any virtual input mapping pending
+	  {
+		  continue;
+	  }
+
+	  if(OD_TPDOtransmitted(flags6010, 0) == false) //check if there is any 6010 Od tpdo transmited
+	  {
+		  continue;
+	  }
+
+	  if(canOpenNodeSTM32.canOpenStack->TPDO[0].CANtxBuff->bufferFull == true)
+	  {
+		  continue;
+	  }
+
+	  OD_requestTPDO(flags6010, 0);
+  }
+  /* USER CODE END tpdoRequester */
+}
+
+/* USER CODE BEGIN Header_CanOpenMenager */
+/**
+* @brief Function implementing the CanOpenMenagerT thread.
+* @param argument: Not used
+* @retval None
   */
 /* USER CODE END Header_canOpenManager */
-void canOpenManager(void *argument)
+void canOpenMenager(void *argument)
 {
   /* USER CODE BEGIN canOpenManager */
 	  OD_extension_t virtualInputMappingExtension = {0, virtualInputMappingRead, OD_writeOriginal, 0};
@@ -227,7 +264,7 @@ void canOpenManager(void *argument)
 
 	  canOpenNodeSTM32.CANHandle = &hfdcan1;
 	  canOpenNodeSTM32.HWInitFunction = MX_FDCAN1_Init;
-	  canOpenNodeSTM32.timerHandle =  &htim14;
+	  canOpenNodeSTM32.timerHandle = &htim14;
 	  canOpenNodeSTM32.desiredNodeID = CANOPEN_ID;
 	  canOpenNodeSTM32.baudrate = 250;
 
@@ -336,43 +373,6 @@ void inputCheck(void *argument)
 	    osDelay(pdMS_TO_TICKS(INPUT_CHECK_TASK_DELAY_MS));
 	  }
   /* USER CODE END inputCheck */
-}
-
-/* USER CODE BEGIN Header_tpdoRequester */
-/**
-* @brief Function implementing the tpdoRequesterT thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_tpdoRequester */
-void tpdoRequester(void *argument)
-{
-  /* USER CODE BEGIN tpdoRequester */
-	uint8_t *flags6010 = OD_getFlagsPDO(OD_find(OD,0x6010));
-  /* Infinite loop */
-  for(;;)
-  {
-	  HAL_IWDG_Refresh(&hiwdg);
-	  osDelay(pdMS_TO_TICKS(TPDO_REQUESTER_TASK_DELAY_MS));
-
-	  if(pendingVirtualInputMappings == 0) //check if there is any virtual input mapping pending
-	  {
-		  continue;
-	  }
-
-	  if(OD_TPDOtransmitted(flags6010, 0) == false) //check if there is any 6010 Od tpdo transmited
-	  {
-		  continue;
-	  }
-
-	  if(canOpenNodeSTM32.canOpenStack->TPDO[0].CANtxBuff->bufferFull == true)
-	  {
-		  continue;
-	  }
-
-	  OD_requestTPDO(flags6010, 0);
-  }
-  /* USER CODE END tpdoRequester */
 }
 
 /* Private application code --------------------------------------------------*/

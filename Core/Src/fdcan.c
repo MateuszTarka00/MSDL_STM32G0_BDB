@@ -53,25 +53,9 @@ void MX_FDCAN1_Init(void)
   hfdcan1.Init.DataSyncJumpWidth = 1;
   hfdcan1.Init.DataTimeSeg1 = 13;
   hfdcan1.Init.DataTimeSeg2 = 2;
-  hfdcan1.Init.StdFiltersNbr = 1;
+  hfdcan1.Init.StdFiltersNbr = 0;
   hfdcan1.Init.ExtFiltersNbr = 0;
   hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
-
-  FDCAN_FilterTypeDef sFilterConfig;
-
-  /* Configure standard ID filter */
-  sFilterConfig.IdType = FDCAN_STANDARD_ID;
-  sFilterConfig.FilterIndex = 0;
-  sFilterConfig.FilterType = FDCAN_FILTER_MASK;
-  sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-  sFilterConfig.FilterID1 = 0x000 << 18;   // Standard ID
-  sFilterConfig.FilterID2 = 0x000 << 18;   // Full mask (exact match)
-
-  if (HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
   if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
   {
     Error_Handler();
@@ -114,7 +98,20 @@ void MX_FDCAN2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN FDCAN2_Init 2 */
+  /* Configure standard ID filter */
+  FDCAN_FilterTypeDef sFilterConfig;
 
+  sFilterConfig.IdType = FDCAN_STANDARD_ID;
+  sFilterConfig.FilterIndex = 0;
+  sFilterConfig.FilterType = FDCAN_FILTER_MASK;
+  sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
+  sFilterConfig.FilterID1 = 0x000 << 18;   // Standard ID
+  sFilterConfig.FilterID2 = 0x000 << 18;   // Full mask (exact match)
+
+  if (HAL_FDCAN_ConfigFilter(&hfdcan2, &sFilterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE END FDCAN2_Init 2 */
 
 }
@@ -136,17 +133,17 @@ void HAL_FDCAN_MspInit(FDCAN_HandleTypeDef* fdcanHandle)
       __HAL_RCC_FDCAN_CLK_ENABLE();
     }
 
-    __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
     /**FDCAN1 GPIO Configuration
-    PD12     ------> FDCAN1_RX
-    PD13     ------> FDCAN1_TX
+    PC4     ------> FDCAN1_RX
+    PC5     ------> FDCAN1_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
+    GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF3_FDCAN1;
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     /* FDCAN1 interrupt Init */
     HAL_NVIC_SetPriority(TIM16_FDCAN_IT0_IRQn, 3, 0);
@@ -206,10 +203,10 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
     }
 
     /**FDCAN1 GPIO Configuration
-    PD12     ------> FDCAN1_RX
-    PD13     ------> FDCAN1_TX
+    PC4     ------> FDCAN1_RX
+    PC5     ------> FDCAN1_TX
     */
-    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_12|GPIO_PIN_13);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_4|GPIO_PIN_5);
 
     /* FDCAN1 interrupt Deinit */
   /* USER CODE BEGIN FDCAN1:TIM16_FDCAN_IT0_IRQn disable */
