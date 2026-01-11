@@ -32,6 +32,8 @@
 #include "CO_app_STM32.h"
 #include "FreeRTOS.h"
 #include "main.h"
+#include "fdcan.h"
+#include "task.h"
 
 /* Local CAN module object */
 static CO_CANmodule_t* CANModule_local = NULL; /* Local instance of global CAN module */
@@ -594,10 +596,59 @@ prv_read_can_received_msg(CAN_HandleTypeDef* hcan, uint32_t fifo, uint32_t fifo_
  * \param[in]       RxFifo0ITs: indicates which Rx FIFO 0 interrupts are signaled.
  */
 void
-HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs) {
-    if (RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE) {
-        prv_read_can_received_msg(hfdcan, FDCAN_RX_FIFO0, RxFifo0ITs);
-    }
+HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs)
+{
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+	if (RxFifo0ITs & FDCAN_IT_RX_FIFO0_NEW_MESSAGE)
+	{
+		if(hfdcan == &hfdcan2)
+		{
+			  /* Drain RX FIFO completely */
+			  while (HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO0) > 0)
+			  {
+			    if (CAN_Q_FULL())
+			    {
+			      /* Queue overflow → THIS is your only real loss case */
+			      break;
+			    }
+
+			    CanMsg_t *msg = &can_queue[can_q_head];
+
+			    if (HAL_FDCAN_GetRxMessage(hfdcan,
+			                              FDCAN_RX_FIFO0,
+			                              &msg->rxHeader,
+			                              msg->data) != HAL_OK)
+			    {
+			      break;
+			    }
+
+			    /* Reject extended IDs */
+			    if (msg->rxHeader.IdType == FDCAN_EXTENDED_ID)
+			    {
+			      continue;
+			    }
+
+			    can_q_head = CAN_Q_NEXT(can_q_head);
+			  }
+
+			  if(can_q_head > 0)
+			  {
+			        vTaskNotifyGiveFromISR(canOpenMenagerTHandle, &xHigherPriorityTaskWoken);
+
+			        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+			  }
+
+		}
+		else
+		{
+			prv_read_can_received_msg(hfdcan, FDCAN_RX_FIFO0, RxFifo0ITs);
+
+	        vTaskNotifyGiveFromISR(canOpenMenagerTHandle, &xHigherPriorityTaskWoken);
+
+	        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+		}
+	}
 }
 
 /**
@@ -607,9 +658,58 @@ HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs) {
  * \param[in]       RxFifo1ITs: indicates which Rx FIFO 0 interrupts are signaled.
  */
 void
-HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo1ITs) {
-    if (RxFifo1ITs & FDCAN_IT_RX_FIFO1_NEW_MESSAGE) {
-        prv_read_can_received_msg(hfdcan, FDCAN_RX_FIFO1, RxFifo1ITs);
+HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo1ITs)
+{
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    if (RxFifo1ITs & FDCAN_IT_RX_FIFO1_NEW_MESSAGE)
+    {
+		if(hfdcan == &hfdcan2)
+		{
+			  /* Drain RX FIFO completely */
+			  while (HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO1) > 0)
+			  {
+			    if (CAN_Q_FULL())
+			    {
+			      /* Queue overflow → THIS is your only real loss case */
+			      break;
+			    }
+
+			    CanMsg_t *msg = &can_queue[can_q_head];
+
+			    if (HAL_FDCAN_GetRxMessage(hfdcan,
+			                              FDCAN_RX_FIFO1,
+			                              &msg->rxHeader,
+			                              msg->data) != HAL_OK)
+			    {
+			      break;
+			    }
+
+			    /* Reject extended IDs */
+			    if (msg->rxHeader.IdType == FDCAN_EXTENDED_ID)
+			    {
+			      continue;
+			    }
+
+			    can_q_head = CAN_Q_NEXT(can_q_head);
+			  }
+
+			  if(can_q_head > 0)
+			  {
+			        vTaskNotifyGiveFromISR(canOpenMenagerTHandle, &xHigherPriorityTaskWoken);
+
+			        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+			  }
+
+		}
+		else
+		{
+			prv_read_can_received_msg(hfdcan, FDCAN_RX_FIFO1, RxFifo1ITs);
+
+	        vTaskNotifyGiveFromISR(canOpenMenagerTHandle, &xHigherPriorityTaskWoken);
+
+	        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+		}
     }
 }
 

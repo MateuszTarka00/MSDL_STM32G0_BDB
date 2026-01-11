@@ -95,7 +95,7 @@ void Error_Handler(void);
 #define OUT14_Pin GPIO_PIN_8
 #define OUT14_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-extern osThreadId_t canOpenManagerTHandle;
+extern osThreadId_t canOpenMenagerTHandle;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

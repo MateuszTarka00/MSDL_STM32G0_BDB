@@ -21,7 +21,8 @@
 #include "fdcan.h"
 
 /* USER CODE BEGIN 0 */
-
+volatile uint8_t can_q_head = 0;
+volatile uint8_t can_q_tail = 0;
 /* USER CODE END 0 */
 
 FDCAN_HandleTypeDef hfdcan1;
@@ -90,7 +91,7 @@ void MX_FDCAN2_Init(void)
   hfdcan2.Init.DataSyncJumpWidth = 1;
   hfdcan2.Init.DataTimeSeg1 = 13;
   hfdcan2.Init.DataTimeSeg2 = 2;
-  hfdcan2.Init.StdFiltersNbr = 0;
+  hfdcan2.Init.StdFiltersNbr = 1;
   hfdcan2.Init.ExtFiltersNbr = 0;
   hfdcan2.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
   if (HAL_FDCAN_Init(&hfdcan2) != HAL_OK)
@@ -105,8 +106,8 @@ void MX_FDCAN2_Init(void)
   sFilterConfig.FilterIndex = 0;
   sFilterConfig.FilterType = FDCAN_FILTER_MASK;
   sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-  sFilterConfig.FilterID1 = 0x000 << 18;   // Standard ID
-  sFilterConfig.FilterID2 = 0x000 << 18;   // Full mask (exact match)
+  sFilterConfig.FilterID1 = 0x000;   // Standard ID
+  sFilterConfig.FilterID2 = 0x000;   // Full mask (exact match)
 
   if (HAL_FDCAN_ConfigFilter(&hfdcan2, &sFilterConfig) != HAL_OK)
   {
@@ -270,7 +271,35 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void canForwardMessages(void)
+{
+	  if (CAN_Q_EMPTY())
+	    return;
 
+	  if (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1) == 0)
+	    return;
+
+	  CanMsg_t *msg = &can_queue[can_q_tail];
+
+	  FDCAN_TxHeaderTypeDef txHeader = {0};
+
+	  txHeader.Identifier = msg->rxHeader.Identifier;
+	  txHeader.IdType = msg->rxHeader.IdType;
+	  txHeader.TxFrameType = FDCAN_DATA_FRAME;
+	  txHeader.DataLength = msg->rxHeader.DataLength;
+	  txHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	  txHeader.BitRateSwitch = msg->rxHeader.BitRateSwitch;
+	  txHeader.FDFormat = msg->rxHeader.FDFormat;
+	  txHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	  txHeader.MessageMarker = 0;
+
+	  if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1,
+	                                    &txHeader,
+	                                    msg->data) == HAL_OK)
+	  {
+	    can_q_tail = CAN_Q_NEXT(can_q_tail);
+	  }
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

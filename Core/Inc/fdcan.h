@@ -35,14 +35,28 @@ extern FDCAN_HandleTypeDef hfdcan1;
 extern FDCAN_HandleTypeDef hfdcan2;
 
 /* USER CODE BEGIN Private defines */
+#define CAN_QUEUE_SIZE 16
 
+typedef struct
+{
+  FDCAN_RxHeaderTypeDef rxHeader;
+  uint8_t data[8];
+} CanMsg_t;
+
+extern volatile uint8_t can_q_head;
+extern volatile uint8_t can_q_tail;
+CanMsg_t can_queue[CAN_QUEUE_SIZE];
+
+#define CAN_Q_NEXT(i) (((i) + 1) % CAN_QUEUE_SIZE)
+#define CAN_Q_FULL()  (CAN_Q_NEXT(can_q_head) == can_q_tail)
+#define CAN_Q_EMPTY() (can_q_head == can_q_tail)
 /* USER CODE END Private defines */
 
 void MX_FDCAN1_Init(void);
 void MX_FDCAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void canForwardMessages(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
