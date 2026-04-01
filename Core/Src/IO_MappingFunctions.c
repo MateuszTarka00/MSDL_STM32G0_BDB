@@ -11,6 +11,9 @@
 #include "OD.h"
 #include "DigitalOutput.h"
 
+VirtualInputMapping virtualInputMapping[VIRTUAL_INPUT_MAPPING_SIZE];
+uint8_t pendingVirtualInputMappings;
+
 ODR_t virtualInputMappingRead(OD_stream_t* const stream, void* const buffer, const OD_size_t size, OD_size_t* const bytesRead)
 {
 	if (pendingVirtualInputMappings > 0)
@@ -71,6 +74,11 @@ ODR_t virtualOutputMappingWrite(OD_stream_t* const stream, const void* const buf
 			{
 				identifierCopy[j] = identifier[j];
 			}
+		}
+
+		if(bufferU8[4] == 0x0F)
+		{
+			identifierCopy[4] = 0x0f;
 		}
 
 		identifierCopy[5] = identifier[5];

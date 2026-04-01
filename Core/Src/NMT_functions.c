@@ -12,6 +12,8 @@
 
 #define FLASH_PAGE 127
 
+CANopenNodeSTM32 canOpenNodeSTM32;
+
 void nmtStateChangedCallback(const CO_NMT_internalState_t state)
 {
 	CO_LOCK_OD(canOpenNodeSTM32.canOpenStack->CANmodule);

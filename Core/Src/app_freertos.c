@@ -301,7 +301,8 @@ void canOpenMenager(void *argument)
 
 		canopen_app_interrupt();
 		canopen_app_process();
-		canForwardMessages();
+		can2ForwardMessages();
+		can1ForwardMessages();
 
 		ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(CANOPEN_TASK_DELAY_MS));
 	  }

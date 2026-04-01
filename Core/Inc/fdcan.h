@@ -43,20 +43,28 @@ typedef struct
   uint8_t data[8];
 } CanMsg_t;
 
-extern volatile uint8_t can_q_head;
-extern volatile uint8_t can_q_tail;
-CanMsg_t can_queue[CAN_QUEUE_SIZE];
+extern volatile uint8_t can_q_head1;
+extern volatile uint8_t can_q_tail1;
+extern CanMsg_t can_queue1[CAN_QUEUE_SIZE];
+
+extern volatile uint8_t can_q_head2;
+extern volatile uint8_t can_q_tail2;
+extern CanMsg_t can_queue2[CAN_QUEUE_SIZE];
 
 #define CAN_Q_NEXT(i) (((i) + 1) % CAN_QUEUE_SIZE)
-#define CAN_Q_FULL()  (CAN_Q_NEXT(can_q_head) == can_q_tail)
-#define CAN_Q_EMPTY() (can_q_head == can_q_tail)
+#define CAN2_Q_FULL()  (CAN_Q_NEXT(can_q_head2) == can_q_tail2)
+#define CAN2_Q_EMPTY() (can_q_head2 == can_q_tail2)
+
+#define CAN1_Q_FULL()  (CAN_Q_NEXT(can_q_head1) == can_q_tail1)
+#define CAN1_Q_EMPTY() (can_q_head1 == can_q_tail1)
 /* USER CODE END Private defines */
 
 void MX_FDCAN1_Init(void);
 void MX_FDCAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void canForwardMessages(void);
+void can1ForwardMessages(void);
+void can2ForwardMessages(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

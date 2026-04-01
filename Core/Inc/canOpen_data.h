@@ -22,8 +22,8 @@ typedef struct
 	uint8_t pending;
 } VirtualInputMapping;
 
-VirtualInputMapping virtualInputMapping[VIRTUAL_INPUT_MAPPING_SIZE];
-uint8_t pendingVirtualInputMappings;
+extern VirtualInputMapping virtualInputMapping[VIRTUAL_INPUT_MAPPING_SIZE];
+extern uint8_t pendingVirtualInputMappings;
 
 
 #endif /* INC_CANOPEN_DATA_H_ */

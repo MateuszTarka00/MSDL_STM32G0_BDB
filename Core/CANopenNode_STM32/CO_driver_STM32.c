@@ -562,6 +562,21 @@ prv_read_can_received_msg(CAN_HandleTypeDef* hcan, uint32_t fifo, uint32_t fifo_
     rcvMsgIdent = rcvMsg.ident;
 #endif
 
+    if (!CAN1_Q_FULL())
+    {
+
+		CanMsg_t *msg = &can_queue1[can_q_head1];
+
+		msg->rxHeader = rx_hdr;
+		memcpy(msg->data, rcvMsg.data, sizeof(rcvMsg.data));
+
+		/* Reject extended IDs */
+		if (msg->rxHeader.IdType != FDCAN_EXTENDED_ID)
+		{
+			 can_q_head1 = CAN_Q_NEXT(can_q_head1);
+		}
+    }
+
     /*
      * Hardware filters are not used for the moment
      * \todo: Implement hardware filters...
@@ -607,13 +622,13 @@ HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs)
 			  /* Drain RX FIFO completely */
 			  while (HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO0) > 0)
 			  {
-			    if (CAN_Q_FULL())
+			    if (CAN2_Q_FULL())
 			    {
 			      /* Queue overflow → THIS is your only real loss case */
 			      break;
 			    }
 
-			    CanMsg_t *msg = &can_queue[can_q_head];
+			    CanMsg_t *msg = &can_queue2[can_q_head2];
 
 			    if (HAL_FDCAN_GetRxMessage(hfdcan,
 			                              FDCAN_RX_FIFO0,
@@ -629,10 +644,10 @@ HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo0ITs)
 			      continue;
 			    }
 
-			    can_q_head = CAN_Q_NEXT(can_q_head);
+			    can_q_head2 = CAN_Q_NEXT(can_q_head2);
 			  }
 
-			  if(can_q_head > 0)
+			  if(can_q_head2 > 0)
 			  {
 			        vTaskNotifyGiveFromISR(canOpenMenagerTHandle, &xHigherPriorityTaskWoken);
 
@@ -669,13 +684,13 @@ HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo1ITs)
 			  /* Drain RX FIFO completely */
 			  while (HAL_FDCAN_GetRxFifoFillLevel(hfdcan, FDCAN_RX_FIFO1) > 0)
 			  {
-			    if (CAN_Q_FULL())
+			    if (CAN2_Q_FULL())
 			    {
 			      /* Queue overflow → THIS is your only real loss case */
 			      break;
 			    }
 
-			    CanMsg_t *msg = &can_queue[can_q_head];
+			    CanMsg_t *msg = &can_queue2[can_q_head2];
 
 			    if (HAL_FDCAN_GetRxMessage(hfdcan,
 			                              FDCAN_RX_FIFO1,
@@ -691,10 +706,10 @@ HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef* hfdcan, uint32_t RxFifo1ITs)
 			      continue;
 			    }
 
-			    can_q_head = CAN_Q_NEXT(can_q_head);
+			    can_q_head2 = CAN_Q_NEXT(can_q_head2);
 			  }
 
-			  if(can_q_head > 0)
+			  if(can_q_head2 > 0)
 			  {
 			        vTaskNotifyGiveFromISR(canOpenMenagerTHandle, &xHigherPriorityTaskWoken);
 

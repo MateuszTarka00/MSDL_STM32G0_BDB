@@ -12,6 +12,6 @@
 
 #endif /* INC_NMT_FUNCTIONS_H_ */
 
-CANopenNodeSTM32 canOpenNodeSTM32;
+extern CANopenNodeSTM32 canOpenNodeSTM32;
 
 void nmtStateChangedCallback(const CO_NMT_internalState_t state);

@@ -21,8 +21,13 @@
 #include "fdcan.h"
 
 /* USER CODE BEGIN 0 */
-volatile uint8_t can_q_head = 0;
-volatile uint8_t can_q_tail = 0;
+volatile uint8_t can_q_head1;
+volatile uint8_t can_q_tail1;
+CanMsg_t can_queue1[CAN_QUEUE_SIZE];
+
+volatile uint8_t can_q_head2;
+volatile uint8_t can_q_tail2;
+CanMsg_t can_queue2[CAN_QUEUE_SIZE];
 /* USER CODE END 0 */
 
 FDCAN_HandleTypeDef hfdcan1;
@@ -271,15 +276,15 @@ void HAL_FDCAN_MspDeInit(FDCAN_HandleTypeDef* fdcanHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void canForwardMessages(void)
+void can2ForwardMessages(void)
 {
-	  if (CAN_Q_EMPTY())
+	  if (CAN2_Q_EMPTY())
 	    return;
 
 	  if (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan1) == 0)
 	    return;
 
-	  CanMsg_t *msg = &can_queue[can_q_tail];
+	  CanMsg_t *msg = &can_queue2[can_q_tail2];
 
 	  FDCAN_TxHeaderTypeDef txHeader = {0};
 
@@ -297,7 +302,37 @@ void canForwardMessages(void)
 	                                    &txHeader,
 	                                    msg->data) == HAL_OK)
 	  {
-	    can_q_tail = CAN_Q_NEXT(can_q_tail);
+	    can_q_tail2 = CAN_Q_NEXT(can_q_tail2);
+	  }
+}
+
+void can1ForwardMessages(void)
+{
+	  if (CAN1_Q_EMPTY())
+	    return;
+
+	  if (HAL_FDCAN_GetTxFifoFreeLevel(&hfdcan2) == 0)
+	    return;
+
+	  CanMsg_t *msg = &can_queue1[can_q_tail1];
+
+	  FDCAN_TxHeaderTypeDef txHeader = {0};
+
+	  txHeader.Identifier = msg->rxHeader.Identifier;
+	  txHeader.IdType = msg->rxHeader.IdType;
+	  txHeader.TxFrameType = FDCAN_DATA_FRAME;
+	  txHeader.DataLength = msg->rxHeader.DataLength;
+	  txHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
+	  txHeader.BitRateSwitch = msg->rxHeader.BitRateSwitch;
+	  txHeader.FDFormat = msg->rxHeader.FDFormat;
+	  txHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
+	  txHeader.MessageMarker = 0;
+
+	  if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan2,
+	                                    &txHeader,
+	                                    msg->data) == HAL_OK)
+	  {
+	    can_q_tail1 = CAN_Q_NEXT(can_q_tail1);
 	  }
 }
 /* USER CODE END 1 */
