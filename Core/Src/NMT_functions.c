@@ -96,61 +96,6 @@ void nmtStateChangedCallback(const CO_NMT_internalState_t state)
 
 		pendingVirtualInputMappings = 0;
 
-		uint8_t valuesChanged = 0;
-
-		entry = OD_find(OD, 0x6100);
-
-		for(uint8_t subIndex = 1; subIndex <= OD_CNT_ARR_6100; ++subIndex)
-		{
-			OD_IO_t io;
-			{
-				OD_getSub(entry, subIndex, &io, false);
-			}
-
-			uint8_t identifier[6];
-
-			OD_stream_t ioStreamCopy = io.stream;
-			{
-				OD_size_t bytesRead;
-				io.read(&io.stream, identifier, sizeof(identifier), &bytesRead);
-			}
-			if(memcmp(identifier, flash_virtualInputOutput.virtualInputs[subIndex-1], 5))
-			{
-				valuesChanged = 1;
-			}
-
-			memcpy(flash_virtualInputOutput.virtualInputs[subIndex-1], identifier, 5);	// save input function
-		}
-
-		entry = OD_find(OD, 0x6200);
-
-		for(uint8_t subIndex = 1; subIndex <= OD_CNT_ARR_6200; ++subIndex)
-		{
-			OD_IO_t io;
-			{
-				OD_getSub(entry, subIndex, &io, false);
-			}
-
-			uint8_t identifier[6];
-
-			OD_stream_t ioStreamCopy = io.stream;
-			{
-				OD_size_t bytesRead;
-				io.read(&io.stream, identifier, sizeof(identifier), &bytesRead);
-			}
-			if(memcmp(identifier, flash_virtualInputOutput.virtualOutputs[subIndex-1], 5))
-			{
-				valuesChanged = 1;
-			}
-
-			memcpy(flash_virtualInputOutput.virtualOutputs[subIndex-1], identifier, 5);	// save input function
-		}
-
-		if(valuesChanged)
-		{
-			Flash_ErasePage(FLASH_PAGE);
-			Flash_WriteStruct(FLASH_PAGE, &flash_virtualInputOutput);
-		}
 
 	}
 

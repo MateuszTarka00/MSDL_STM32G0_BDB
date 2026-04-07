@@ -262,6 +262,9 @@ void canOpenMenager(void *argument)
 	  OD_extension_t outputGroupExtension = {0, OD_readOriginal, outputGroupWrite, 0};
 	  result  = OD_extension_init(OD_find(OD, 0x6200), &outputGroupExtension);
 
+	  OD_extension_t saveParametersExtension = {0, OD_readOriginal, saveParametersWrite, 0};
+	  result  = OD_extension_init(OD_find(OD, 0x1010), &saveParametersExtension);
+
 	  canOpenNodeSTM32.CANHandle = &hfdcan1;
 	  canOpenNodeSTM32.HWInitFunction = MX_FDCAN1_Init;
 	  canOpenNodeSTM32.timerHandle = &htim14;

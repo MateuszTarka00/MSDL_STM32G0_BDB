@@ -26,8 +26,9 @@ void Flash_ErasePage(uint32_t pageIndex)
     uint32_t pageError = 0;
 
     eraseInit.TypeErase = FLASH_TYPEERASE_PAGES;
-    eraseInit.Page = pageIndex;
     eraseInit.NbPages = 1;
+    eraseInit.Page = pageIndex - 64;
+    eraseInit.Banks = FLASH_BANK_2;
 
     if (HAL_FLASHEx_Erase(&eraseInit, &pageError) != HAL_OK) {
         // Handle error
