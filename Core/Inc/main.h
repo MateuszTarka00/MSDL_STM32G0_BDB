@@ -29,10 +29,10 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g0xx_hal.h"
-#include "cmsis_os.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "cmsis_os.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -84,6 +84,8 @@ void Error_Handler(void);
 #define IN6_GPIO_Port GPIOA
 #define IN5_Pin GPIO_PIN_10
 #define IN5_GPIO_Port GPIOA
+#define IN11_Pin GPIO_PIN_11
+#define IN11_GPIO_Port GPIOA
 #define CAN_FAULT_Pin GPIO_PIN_15
 #define CAN_FAULT_GPIO_Port GPIOA
 #define CAN_OK_Pin GPIO_PIN_3

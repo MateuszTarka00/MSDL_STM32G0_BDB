@@ -15,7 +15,7 @@
         <ProfileTechnology>CANopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xmlns:q1="http://www.canopen.org/xml/1.1" xsi:type="q1:ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="DS301_profile.xpd" fileCreator="" fileCreationDate="2020-11-23" fileCreationTime="12:00:00.0000000+01:00" fileModifiedBy="" fileModificationDate="2025-10-31" fileModificationTime="19:04:33.7871348+01:00" fileVersion="1" supportedLanguages="en" xmlns="">
+    <ProfileBody xmlns:q1="http://www.canopen.org/xml/1.1" xsi:type="q1:ProfileBody_Device_CANopen" formatName="CANopen" formatVersion="1.0" fileName="DS301_profile.xpd" fileCreator="" fileCreationDate="2020-11-23" fileCreationTime="13:00:00.0000000+02:00" fileModifiedBy="" fileModificationDate="2026-05-11" fileModificationTime="17:50:19.9681540+02:00" fileVersion="1" supportedLanguages="en" xmlns="">
       <q1:DeviceIdentity>
         <q1:vendorName>MSDL</q1:vendorName>
         <q1:vendorID></q1:vendorID>
@@ -506,7 +506,7 @@
           <q1:parameter uniqueID="UID_SUB_101601" access="readWrite">
             <label lang="en">Consumer heartbeat time</label>
             <UDINT />
-            <q1:defaultValue value="0x00000000" />
+            <q1:defaultValue value="68036" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_OBJ_1017" access="readWrite">
             <description lang="en">Heartbeat producer time in ms (0 = disable transmission).</description>
@@ -1052,7 +1052,7 @@
           <q1:parameter uniqueID="UID_SUB_610004" access="readWrite">
             <label lang="en">Virtual input 4</label>
             <BITSTRING />
-            <q1:defaultValue value="c5 06 01 ff ff 00" />
+            <q1:defaultValue value="B4 09 01 00 ff 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_610005" access="readWrite">
             <label lang="en">Virtual input 5</label>
@@ -1072,22 +1072,22 @@
           <q1:parameter uniqueID="UID_SUB_610008" access="readWrite">
             <label lang="en">Virtual input 8</label>
             <BITSTRING />
-            <q1:defaultValue value="c5 04 01 ff ff 00" />
+            <q1:defaultValue value="B4 50 01 ff ff 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_610009" access="readWrite">
             <label lang="en">Virtual input 9</label>
             <BITSTRING />
-            <q1:defaultValue value="c5 0b 01 ff ff 00" />
+            <q1:defaultValue value="B4 19 01 00 ff 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_61000A" access="readWrite">
             <label lang="en">Virtual input 10</label>
             <BITSTRING />
-            <q1:defaultValue value="c4 12 01 ff ff 00" />
+            <q1:defaultValue value="B4 20 01 00 ff 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_61000B" access="readWrite">
             <label lang="en">Virtual input 11</label>
             <BITSTRING />
-            <q1:defaultValue value="00 00 00 00 00 00" />
+            <q1:defaultValue value="B4 08 01 00 FF 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_61000C" access="readWrite">
             <label lang="en">Virtual input 12</label>
@@ -1181,27 +1181,27 @@
           <q1:parameter uniqueID="UID_SUB_62000C" access="readWrite">
             <label lang="en">Virtual output 12</label>
             <BITSTRING />
-            <q1:defaultValue value="c4 0e 01 ff ff 00" />
+            <q1:defaultValue value="B3 02 01 00 ff 01" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_62000D" access="readWrite">
             <label lang="en">Virtual output 13</label>
             <BITSTRING />
-            <q1:defaultValue value="c5 0c 01 ff ff 00" />
+            <q1:defaultValue value="B4 17 01 00 ff 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_62000E" access="readWrite">
             <label lang="en">Virtual output 14</label>
             <BITSTRING />
-            <q1:defaultValue value="c4 0f 01 ff ff 00" />
+            <q1:defaultValue value="3F 0D 01 ff ff 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_62000F" access="readWrite">
             <label lang="en">Virtual output 15</label>
             <BITSTRING />
-            <q1:defaultValue value="c7 2d 01 ff ff 00" />
+            <q1:defaultValue value="B4 5E 01 00 ff 00" />
           </q1:parameter>
           <q1:parameter uniqueID="UID_SUB_620010" access="readWrite">
             <label lang="en">Virtual output 16</label>
             <BITSTRING />
-            <q1:defaultValue value="c7 2e 01 ff ff 00" />
+            <q1:defaultValue value="B4 5F 01 00 ff 00" />
           </q1:parameter>
         </q1:parameterList>
       </q1:ApplicationProcess>
@@ -1220,7 +1220,7 @@
         <ProfileTechnology>CANopen</ProfileTechnology>
       </ISO15745Reference>
     </ProfileHeader>
-    <ProfileBody xmlns:q2="http://www.canopen.org/xml/1.1" xsi:type="q2:ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="DS301_profile.xpd" fileCreator="" fileCreationDate="2020-11-23" fileCreationTime="12:00:00.0000000+01:00" fileModificationDate="2025-10-31" fileModificationTime="19:04:33.7871348+01:00" fileVersion="1" supportedLanguages="en" xmlns="">
+    <ProfileBody xmlns:q2="http://www.canopen.org/xml/1.1" xsi:type="q2:ProfileBody_CommunicationNetwork_CANopen" formatName="CANopen" formatVersion="1.0" fileName="DS301_profile.xpd" fileCreator="" fileCreationDate="2020-11-23" fileCreationTime="13:00:00.0000000+02:00" fileModificationDate="2026-05-11" fileModificationTime="17:50:19.9681540+02:00" fileVersion="1" supportedLanguages="en" xmlns="">
       <ApplicationLayers>
         <q2:CANopenObjectList>
           <CANopenObject index="1000" name="Device type" objectType="7" PDOmapping="no" uniqueIDRef="UID_OBJ_1000" />

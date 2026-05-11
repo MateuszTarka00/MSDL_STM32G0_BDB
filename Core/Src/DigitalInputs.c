@@ -21,7 +21,7 @@ DigitalInput digitalInput[16] =
 		{IN8_GPIO_Port, IN8_Pin},
 		{IN9_GPIO_Port, IN9_Pin},
 		{IN10_GPIO_Port, IN10_Pin},
-		{0, 0},
+		{IN11_GPIO_Port, IN11_Pin},
 		{0, 0},
 		{0, 0},
 		{0, 0},

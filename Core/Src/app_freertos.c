@@ -328,7 +328,7 @@ void inputCheck(void *argument)
 	  for(;;)
 	  {
 		HAL_IWDG_Refresh(&hiwdg);
-		for(uint8_t subIndex = 1; subIndex <= 10; ++subIndex)
+		for(uint8_t subIndex = 1; subIndex <= 11; ++subIndex)
 		{
 			OD_IO_t io;
 			{
