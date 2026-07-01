@@ -45,7 +45,7 @@ void nmtStateChangedCallback(const CO_NMT_internalState_t state)
 					io.read(&io.stream, identifier, sizeof(identifier), &bytesRead);
 				}
 
-				memcpy(identifier, flash_virtualInputOutput.virtualInputs[subIndex-1], 5);	// load saved input functions
+				memcpy(identifier, flash_virtualInputOutput.virtualInputs[subIndex-1], 6);	// load saved input functions
 
 				OD_size_t bytesWritten;
 				io.write(&ioStreamCopy, identifier, sizeof(identifier), &bytesWritten);
@@ -70,11 +70,11 @@ void nmtStateChangedCallback(const CO_NMT_internalState_t state)
 					io.read(&io.stream, identifier, sizeof(identifier), &bytesRead);
 				}
 
-				identifier[5] = 0;	// reset output
+				identifier[5] = 0xF0;	// reset output
 
 				if(isNotEmpty)
 				{
-					memcpy(identifier, flash_virtualInputOutput.virtualOutputs[subIndex-1], 5); //load saved output function
+					memcpy(identifier, flash_virtualInputOutput.virtualOutputs[subIndex-1], 6); //load saved output function
 				}
 
 				OD_size_t bytesWritten;

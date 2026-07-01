@@ -163,12 +163,15 @@ ODR_t saveParametersWrite(OD_stream_t* const stream, const void* const buffer, c
 				OD_size_t bytesRead;
 				io.read(&io.stream, identifier, sizeof(identifier), &bytesRead);
 			}
-			if(memcmp(identifier, flash_virtualInputOutput.virtualInputs[subIndex-1], 5))
+
+			identifier[5] = identifier[5] & 0xF0; //Remove value, only input settings must remain
+
+			if(memcmp(identifier, flash_virtualInputOutput.virtualInputs[subIndex-1], 6))
 			{
 				valuesChanged = 1;
 			}
 
-			memcpy(flash_virtualInputOutput.virtualInputs[subIndex-1], identifier, 5);	// save input function
+			memcpy(flash_virtualInputOutput.virtualInputs[subIndex-1], identifier, 6);	// save input function
 		}
 
 		entry = OD_find(OD, 0x6200);
@@ -187,12 +190,12 @@ ODR_t saveParametersWrite(OD_stream_t* const stream, const void* const buffer, c
 				OD_size_t bytesRead;
 				io.read(&io.stream, identifier, sizeof(identifier), &bytesRead);
 			}
-			if(memcmp(identifier, flash_virtualInputOutput.virtualOutputs[subIndex-1], 5))
+			if(memcmp(identifier, flash_virtualInputOutput.virtualOutputs[subIndex-1], 6))
 			{
 				valuesChanged = 1;
 			}
 
-			memcpy(flash_virtualInputOutput.virtualOutputs[subIndex-1], identifier, 5);	// save output function
+			memcpy(flash_virtualInputOutput.virtualOutputs[subIndex-1], identifier, 6);	// save output function
 		}
 
 		if(valuesChanged)

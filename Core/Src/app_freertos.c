@@ -352,7 +352,15 @@ void inputCheck(void *argument)
 			if(enabledInput)
 			{
 				state = HAL_GPIO_ReadPin(digitalInput[subIndex - 1].port, digitalInput[subIndex - 1].pin);
-				identifier[5] = state;
+
+				if(state)
+				{
+					identifier[5] &= 0xF1;
+				}
+				else
+				{
+					identifier[5] &= 0xF0;
+				}
 			}
 
 			// check if input has changed
